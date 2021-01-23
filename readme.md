@@ -26,7 +26,7 @@ of time and thinking has learned it pretty well
 - User preference is composed of two parts:
     - "Preference vector", `X*`: a vector of shape `1xD` which 
     - "Individuality factor", `L*`: a linear transform of shape `DxL` account for individuality in users, e.g. "different taste buds"
-    - How to compute preference between `point_i` and `point_j`, where `+1 prefers point_i` and `-1 prefers point_j`:
+    - How to compute preference between `point_i` and `point_j`, where `+1` means `point_i > point_j`:
         ```
         -1 if norm(matmul(L*, point_i) - matmul(L*, X*)) > norm(matmul(L*, point_i) - matmul(L*, X*)), else +1
         ```
