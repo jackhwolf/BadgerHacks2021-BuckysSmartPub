@@ -13,7 +13,7 @@ consists of two layers:
 '''
 class RankLearner:
 
-    def __init__(self, customer_ptr, lr=0.001, wd=1e-5, epochs=2, clip_grad=0.5):
+    def __init__(self, customer_ptr, lr=0.001, wd=1e-5, epochs=1, clip_grad=0.5):
         self.D = customer_ptr.data_ptr.D
         self.L = customer_ptr.L_dim
         self.x_hat, self.l_hat = None, None
@@ -85,20 +85,18 @@ class ActiveRankLearner:
         self.count = 0
         self.checkpoint_threshold = float(checkpoint_threshold)
 
-    # iterator to step through active learning phases until stop
-    def run_iterator(self):
-        self.learn_observed()
-        yield self.checkpoint()
-        while self.customer_ptr.has_unobserved:
-            self.current_round += 1
+    def step(self):
+        if self.current_round == 0:
+            self.learn_observed()
+        elif not self.customer_ptr.has_unobserved:
+            return True, {}
+        else:
             idxs, scores = self.score_unobserved()
             selection = self.make_round_selection(idxs, scores)
             self.customer_ptr.mark_observed(selection)
             self.learn_observed(selection)
-            should_stop, output = self.checkpoint()
-            yield should_stop, output
-            if should_stop:
-                break
+        self.current_round += 1
+        return self.checkpoint()
 
     # learn the pairwise rankings b/t observed and unobserved points
     def learn_observed(self, obs=None):

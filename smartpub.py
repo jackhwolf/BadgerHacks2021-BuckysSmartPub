@@ -1,5 +1,5 @@
-from algo.data import Data, DataCustomer
-from algo.ranklearner import ActiveRankLearner
+from data import Data, DataCustomer
+from ranklearner import ActiveRankLearner
 from uuid import uuid4
 from collections import OrderedDict
 import matplotlib.pyplot as plt
@@ -17,7 +17,6 @@ class PubCustomer:
         self.cid = uuid4().hex
         self.customer = DataCustomer(data_ptr, **customer_kw)
         self.active_learner = ActiveRankLearner(self.customer, model_kw=model_kw)
-        self.run_iterator = self.active_learner.run_iterator()
         self.learned_rounds = 0
         self.running_drink_count = []
         self.running_oracle_accuracy = []
@@ -26,17 +25,18 @@ class PubCustomer:
     def learn(self):
         if self.finished:
             return True, {}
-        should_stop, out = False, {}
-        try:
-            should_stop, out = next(self.run_iterator)
-        except StopIteration:
-            should_stop = True
+        should_stop, out = self.active_learner.step()
         self.finished = should_stop
         self.learned_rounds += 1
         self.running_drink_count.append(self.active_learner.count)
         self.running_oracle_accuracy.append(out['oracle_accuracy'])
         self.most_recent_output = out
         return should_stop, out
+
+    def report(self, short=True):
+        if short:
+            return self.short_report
+        return self.long_report
 
     @property
     def short_report(self):
@@ -90,11 +90,14 @@ class BuckysSmartPub:
         scheduler = session.attached_window
         scheduler.rename_window('scheduler')
         workers = session.new_window('workers', attach=False)
-        workers.select_layout('tiled')
         scheduler.attached_pane.send_keys('source venv/bin/activate')
         scheduler.attached_pane.send_keys('dask-scheduler')
-        workers.attached_pane.send_keys('source venv/bin/activate')
-        workers.attached_pane.send_keys(f'export OMP_NUM_THREADS=4; dask-worker {"192.168.86.83:8786"}')
+        wp = workers.attached_pane
+        for i in range(3):
+            wp.send_keys('source venv/bin/activate')
+            wp.send_keys(f'export OMP_NUM_THREADS=4; dask-worker {"192.168.86.83:8786"}')
+            wp = workers.split_window(attach=False)
+        workers.select_layout('tiled')
     
     def add_customer(self, customer_kw={}, model_kw={}):
         customer = PubCustomer(self.data, customer_kw, model_kw)
@@ -121,10 +124,11 @@ class BuckysSmartPub:
     def compile_customer_reports(self, cids=None, short=False):
         if cids is None:
             cids = list(self.cid_map)
-        if short:
-            return {cid: self.cid_map[cid].short_report for cid in cids}
-        else:
-            return {cid: self.cid_map[cid].long_report for cid in cids}
+        reports = []
+        for cid in cids:
+            cust = self.cid_map[cid]
+            reports.append(cust.report(short))
+        return reports
 
     def visualize_customer_report(self, cid, report=None,):
         if report is None:
@@ -148,10 +152,3 @@ class BuckysSmartPub:
         ax.set_ylim(0, 1)
         ax.bar(xticks, report['running_oracle_accuracy'])
         # plt.show()
-
-if __name__ == "__main__":
-    pub = BuckysSmartPub()
-    c = pub.add_customer()
-    # pub.learn_active_customers(finish=True)
-    # pub.visualize_customer_report(c)
-    print(pub.compile_customer_reports())
