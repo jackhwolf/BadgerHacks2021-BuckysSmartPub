@@ -10,18 +10,22 @@ Active learning method for learning to recommend
     - `ABV`: `float`, alcohol by volume of given beer
     - `IBU`: `float`, international bitterness unit of given beer
 - The clients of BSP are all beer enthusiasts and have a preference towards a certain type of beer
-- When a new client joins the Pub, Bucky's goal is to learn their preference as quickly as possible so he can provide quality recommendations tailored to this client
-- Bucky accomplishes this by giving the newbie an initial set of a few beers to taste against each other and provide the pairwise rankings, called the "initial" step
-    - e.g. given beers A, B, and C, the client would tell Bucky something like "I like beer A more than B and C, but I like beer C more than beer B"
+- When a new client joins the Pub, Bucky's goal is to learn their preference as quickly as possible so he can 
+provide quality recommendations tailored to this client
+- Bucky accomplishes this by giving the newbie an initial set of a few beers to taste against each other and 
+provide the pairwise rankings, called the "initial" step
+    - e.g. given beers A, B, and C, the client would tell Bucky something like "I like beer A 
+      more than B and C, but I like beer C more than beer B"
 - Next, Bucky starts to choose beers from his shelf that he would like you pairwise rank again, called an "exploration" step
-- At each step, Bucky learns more and more about the new clients preference, and hopefully within a reasonable amount of time and thinking has learned it pretty well
+- At each step, Bucky learns more and more about the new clients preference, and hopefully within a reasonable amount 
+of time and thinking has learned it pretty well
 
 ## Using a siamese neural network to learn user preference by training on pairwise rankings of points
 - Data can be represented as `NxD` matrix where each point is a `1xD` vector
 - User preference is composed of two parts:
     - "Preference vector", `X*`: a vector of shape `1xD` which 
     - "Individuality factor", `L*`: a linear transform of shape `DxL` account for individuality in users, e.g. "different taste buds"
-    - How to compute preference between `point_i` and `point_j`:
+    - How to compute preference between `point_i` and `point_j`, where `+1 prefers point_i` and `-1 prefers point_j`:
         ```
         -1 if norm(matmul(L*, point_i) - matmul(L*, X*)) > norm(matmul(L*, point_i) - matmul(L*, X*)), else +1
         ```
@@ -31,7 +35,7 @@ Active learning method for learning to recommend
         - `true_rank_ij`:   `scalar in {-1, +1}`, true ranking of input points
     - Predicted ranking:
         ```
-        -1 if norm(matmul(L^, point_i) - matmul(L^, X^)) > norm(matmul(L^, point_i) - matmul(L^, X^)), else +1
+        (norm(matmul(L^, point_j) - matmul(L^, X^))) - (norm(matmul(L^, point_i) - matmul(L^, X^)))
         ```
     - Compare `predicted_rank_ij` to `true_rank_ij` using loss function
     - Use backpropogation to update weights of `X^` and `L^`
