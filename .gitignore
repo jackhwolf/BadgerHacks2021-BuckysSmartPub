@@ -4,4 +4,4 @@ venv
 .vscode
 dask-worker-space
 *.lock
-.eslintcache
+**/.eslintcache
