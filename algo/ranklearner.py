@@ -128,8 +128,7 @@ class ActiveRankLearner:
             true = np.append(true, rank_ij)
             pred = np.append(pred, self.model.predict_pairwise_rank(pi, pj))
         current_acc = accuracy_score(true, pred)
-        # should_stop = current_acc >= self.checkpoint_threshold
-        should_stop = self.current_round > 1
+        should_stop = current_acc >= self.checkpoint_threshold
         rep = {}
         rep['oracle_accuracy'] = current_acc
         return should_stop, rep

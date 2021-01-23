@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing import Optional, List
@@ -20,11 +21,14 @@ class DaskClient:
         
     def add_future(self, fn):
         fut = self.cli.submit(fn)
-        self.futures[fut.key] = fut
-        return fut.key
+        fid = uuid4().hex
+        self.futures[fid] = fut
+        return fid
 
     def check_future(self, fid):
-        return self.futures[fid].status
+        if fid in self.futures:
+            return self.futures[fid].status
+        return "error"
 
     def gather_future(self, fid):
         return self.futures[fid].result()
@@ -37,6 +41,17 @@ class DaskClient:
 
 pub = BuckysSmartPub()
 app = FastAPI()
+origins = [
+    "http://localhost:3000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 client = DaskClient()
 
 @app.get('/')
@@ -56,7 +71,7 @@ class CustomerKW(BaseModel):
 class ModelKW(BaseModel):
     lr: Optional[float] = 0.0001
     wd: Optional[float] = 0.000001
-    epochs: Optional[int] = 1
+    epochs: Optional[int] = 10
     clip_grad: Optional[float] = 0.5
 
 class NewCustomerKW(BaseModel):
@@ -92,9 +107,10 @@ def check_learn(fid: str):
     out = {}
     out['fid'] = fid
     out['status'] = client.check_future(fid)
+    out['result'] = {}
     if out['status'] == 'finished':
+        out['result'] = client.gather_future(fid)[0]
         client.del_future(fid)
-    out['result'] = client.gather_future(fid)
     return JSONResponse(json.dumps(out))
 
 def deploy():

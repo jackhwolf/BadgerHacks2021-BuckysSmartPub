@@ -7,6 +7,8 @@ import numpy as np
 import os
 import libtmux
 
+customer_names = ['jack', 'riley', 'kelley', 'scott', 'skippy', 'elvis']
+
 '''
 Wrapper for customer and active learner for use by smart pub
 '''
@@ -14,7 +16,7 @@ class PubCustomer:
 
     def __init__(self, data_ptr, customer_kw={}, model_kw={}):
         self.finished = False
-        self.cid = uuid4().hex
+        self.cid = np.random.choice(customer_names) # uuid4().hex
         self.customer = DataCustomer(data_ptr, **customer_kw)
         self.active_learner = ActiveRankLearner(self.customer, model_kw=model_kw)
         self.learned_rounds = 0
@@ -42,7 +44,7 @@ class PubCustomer:
     def short_report(self):
         rep = OrderedDict({})
         rep['customer_id'] = self.cid
-        rep['finished'] = self.finished
+        rep['finished'] = bool(self.finished)
         rep['learned_rounds'] = self.learned_rounds
         rep['most_recent_output'] = self.most_recent_output
         rep['running_drink_count'] = self.running_drink_count
@@ -152,3 +154,11 @@ class BuckysSmartPub:
         ax.set_ylim(0, 1)
         ax.bar(xticks, report['running_oracle_accuracy'])
         # plt.show()
+
+# if __name__ == '__main__':
+#     pub = BuckysSmartPub()
+#     cid = pub.add_customer()
+#     pub.learn_active_customers([cid])
+#     pub.learn_active_customers([cid])
+#     pub.learn_active_customers([cid])
+#     print(pub.compile_customer_reports([cid]))
