@@ -88,7 +88,6 @@ class ActiveRankLearner:
     # iterator to step through active learning phases until stop
     def run_iterator(self):
         self.learn_observed()
-        print(self.count)
         yield self.checkpoint()
         while self.customer_ptr.has_unobserved:
             self.current_round += 1
@@ -97,7 +96,6 @@ class ActiveRankLearner:
             self.customer_ptr.mark_observed(selection)
             self.learn_observed(selection)
             should_stop, output = self.checkpoint()
-            print(self.count)
             yield should_stop, output
             if should_stop:
                 break
