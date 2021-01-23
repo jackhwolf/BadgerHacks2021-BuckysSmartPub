@@ -24,7 +24,7 @@ of time and thinking has learned it pretty well
 ## Using a siamese neural network to learn user preference by training on pairwise rankings of points
 - Data can be represented as `NxD` matrix where each point is a `1xD` vector
 - User preference is composed of two parts:
-    - "Preference vector", `X*`: a vector of shape `1xD` which 
+    - "Preference vector", `X*`: a vector of shape `1xD` which represents their true preference
     - "Individuality factor", `L*`: a linear transform of shape `DxL` account for individuality in users, e.g. "different taste buds"
     - How to compute preference between `point_i` and `point_j`, where `+1` means `point_i > point_j`:
         ```
