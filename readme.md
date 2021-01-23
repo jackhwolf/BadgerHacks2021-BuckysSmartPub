@@ -63,7 +63,7 @@ of time and thinking has learned it pretty well
     - This can often be enough to learn accurately 
 
 ## Exposing over the web
-- To allow people to visit Bucky's Smart Pub virtually, I have built a backend `FastAPI` app and frontend `React` site
+- To visit Bucky's Smart Pub virtually, I have built a backend `FastAPI` app and frontend `React` site
 - Frontend site allows people to spin up their own Smart Pub, add new clients, interact with and view the learning process, and get personalized beer recommendations
 - Long-running api calls, such as calls to train the model, are ran in the background using `dask.Distributed`
 - Frontend handles submitting and collecting background jobs so the page does not freeze or timeout
