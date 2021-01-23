@@ -29,6 +29,9 @@ class DaskClient:
     def gather_future(self, fid):
         return self.futures[fid].result()
 
+    def del_future(self, fid):
+        del self.futures[fid]
+
     def new_fid(self):
         return uuid4().hex
 
@@ -89,6 +92,8 @@ def check_learn(fid: str):
     out = {}
     out['fid'] = fid
     out['status'] = client.check_future(fid)
+    if out['status'] == 'finished':
+        client.del_future(fid)
     out['result'] = client.gather_future(fid)
     return JSONResponse(json.dumps(out))
 
