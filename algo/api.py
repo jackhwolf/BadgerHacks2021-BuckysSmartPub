@@ -40,8 +40,8 @@ class DaskClient:
         return uuid4().hex
 
 pub = BuckysSmartPub()
+client = DaskClient()
 app = FastAPI()
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000"],
@@ -49,7 +49,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-client = DaskClient()
 
 @app.get('/')
 @app.get('/health')
