@@ -2,7 +2,8 @@
 #### Badger Hacks 2021 submission for Jack Wolf
 
 ## Overview
-Active learning method for learning to recommend 
+Active learning method for learning to recommend, applied to a virtual pub where the clients can interact with a smart bartender who learns
+their beer preferences accurately and efficiently
 
 ## How it works
 - Buckys Smart Pub has some beers, each of which is defined by a collection of features, e.g.
@@ -54,3 +55,15 @@ of time and thinking has learned it pretty well
         - create exploratory set, `E`, containing the points that are argmin, argmax, and argmedian of `scores`
         - learn the pairwise ranks between `Ei, Ej for i,j in 2-combination(E)`
         - checkpoint and log
+
+## Exposing over the web
+- To allow people to visit Bucky's Smart Pub virtually, I have built a backend `FastAPI` app and frontend `React` site
+- Frontend site allows people to spin up their own Smart Pub, add new clients, interact with and view the learning process, and get personalized beer recommendations
+- Long-running api calls, such as calls to train the model, are ran in the background using `dask.Distributed`
+- Frontend ha
+
+## To run
+- clone [the repo](https://github.com/jackhwolf/BadgerHacks2021-BuckysSmartPub) which has code for frontend and implementation of algo
+- in one terminal, `cd` into the `algo/` directory and run `$python3 api.py`
+- in another terminal, `cd` into the `badgerhacks2021-app/` directory and run `yarn start`
+- navigate to http://localhost:3000/ to join Bucky's Smart Pub virtually
