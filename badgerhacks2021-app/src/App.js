@@ -4,6 +4,7 @@ import Alert from 'react-bootstrap/Alert';
 import Card from 'react-bootstrap/Card';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
+
 const url = "http://127.0.0.1:5005"
 
 class Customer extends React.Component {
