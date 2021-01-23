@@ -55,12 +55,18 @@ of time and thinking has learned it pretty well
         - create exploratory set, `E`, containing the points that are argmin, argmax, and argmedian of `scores`
         - learn the pairwise ranks between `Ei, Ej for i,j in 2-combination(E)`
         - checkpoint and log
+- Why use active learning? Minimize amount of data needed to perform well, e.g. minimize the amount of beers a client drinks before Bucky knows their preference
+    - If there are `50` beers on the shelf, then there are `50!/(50-2)! = 2450` pairwise combinations of beers to try
+    - Bucky could just give you all `2450` combinations to try and learn your preference with no tricks
+    - Instead, Bucky wants to be smart and show you smaller selections of beers at a time
+    - If Bucky starts with a selection of `5` beers and then you continue to do `3` rounds of exploration, you have roughly tried a total of `(5 * 50) + (3 * 50) = O(400)` beers
+    - This can often be enough to learn accurately 
 
 ## Exposing over the web
 - To allow people to visit Bucky's Smart Pub virtually, I have built a backend `FastAPI` app and frontend `React` site
 - Frontend site allows people to spin up their own Smart Pub, add new clients, interact with and view the learning process, and get personalized beer recommendations
 - Long-running api calls, such as calls to train the model, are ran in the background using `dask.Distributed`
-- Frontend ha
+- Frontend handles submitting and collecting background jobs so the page does not freeze or timeout
 
 ## To run
 - clone [this repo](https://github.com/jackhwolf/BadgerHacks2021-BuckysSmartPub) which has code for frontend and implementation of algo
