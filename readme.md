@@ -63,7 +63,7 @@ of time and thinking has learned it pretty well
 - Frontend ha
 
 ## To run
-- clone [the repo](https://github.com/jackhwolf/BadgerHacks2021-BuckysSmartPub) which has code for frontend and implementation of algo
+- clone [this repo](https://github.com/jackhwolf/BadgerHacks2021-BuckysSmartPub) which has code for frontend and implementation of algo
 - in one terminal, `cd` into the `algo/` directory and run `$python3 api.py`
 - in another terminal, `cd` into the `badgerhacks2021-app/` directory and run `yarn start`
 - navigate to http://localhost:3000/ to join Bucky's Smart Pub virtually
