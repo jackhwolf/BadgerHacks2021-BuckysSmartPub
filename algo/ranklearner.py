@@ -94,18 +94,18 @@ class ActiveRankLearner:
             idxs, scores = self.score_unobserved()
             selection = self.make_round_selection(idxs, scores)
             self.customer_ptr.mark_observed(selection)
-            self.learn_observed(selection)
+            self.learn_observed()
         self.current_round += 1
         return self.checkpoint()
 
-    # learn the pairwise rankings b/t observed and unobserved points
-    def learn_observed(self, obs=None):
-        if obs is None:
-            obs = self.customer_ptr.observed_indexes
-        uobs = self.customer_ptr.unobserved_indexes
-        for pi, pj, rij in self.customer_ptr.observed_ranking_iterator(obs, uobs):
+    # learn the pairwise rankings b/t observed and all other points
+    def learn_observed(self):
+        self.model.initialize_layers()
+        obs = self.customer_ptr.observed_indexes
+        idxs = self.customer_ptr.data_ptr.index
+        for pi, pj, rij in self.customer_ptr.observed_ranking_iterator(obs, idxs):
             self.count += 1
-            self.model.learn_pairwise_rank(pi, pj, rij)    
+            self.model.learn_pairwise_rank(pi, pj, rij)   
 
     # compute scoring heuristic for all unobserved points
     def score_unobserved(self):

@@ -2,10 +2,12 @@
 #### Badger Hacks 2021 submission for Jack Wolf
 
 ## Overview
-Active learning method for learning to recommend, applied to a virtual pub where the clients can interact with a smart bartender who learns
-their beer preferences accurately and efficiently
+- Designed custom Siamese neural network for learning-to-rank/recommend by training on pairwise rankings of points
+- Designed custom active learning algorithm to optimize selection of training points for this model
+- Created API for users to interact with model to control training and receive recommendations
+- Built frontend site for visualizing model interactions, handling multiple clients, and running model training in the background
 
-## How it works
+## Buckys Smart Pub application
 - Buckys Smart Pub has some beers, each of which is defined by a collection of features, e.g.
     - `Name`: `string`, label name of given beer
     - `ABV`: `float`, alcohol by volume of given beer
@@ -18,6 +20,7 @@ provide the pairwise rankings, called the "initial" step
     - e.g. given beers A, B, and C, the client would tell Bucky something like "I like beer A 
       more than B and C, but I like beer C more than beer B"
 - Next, Bucky starts to choose beers from his shelf that he would like you pairwise rank again, called an "exploration" step
+- After each step, Bucky calculates the clients "happiness level", which 
 - At each step, Bucky learns more and more about the new clients preference, and hopefully within a reasonable amount 
 of time and thinking has learned it pretty well
 
@@ -50,11 +53,10 @@ of time and thinking has learned it pretty well
     - after each round, we compute testing accuracy on a hold out set for pairwise ranking predictions
 - Instead of training our model on all pairwise ranks in our dataset, we now 
     - Select an initial random group of `R` points and learn the pairwise ranks between `Ri, Rj for i,j in 2-combination(R)`
-    - While there exist not ranked points, `NR`:
+    - While there exists points in `NR`:
         - compute scores for all points in `NR`
-        - create exploratory set, `E`, containing the points that are argmin, argmax, and argmedian of `scores`
-        - learn the pairwise ranks between `Ei, Ej for i,j in 2-combination(E)`
-        - checkpoint and log
+        - choose point `S` which minimizes the scores
+        - learn the pairwise ranks between `S, NR_P for NR_P in NR`
 - Why use active learning? Minimize amount of data needed to perform well, e.g. minimize the amount of beers a client drinks before Bucky knows their preference
     - If there are `50` beers on the shelf, then there are `50!/(50-2)! = 2450` pairwise combinations of beers to try
     - Bucky could just give you all `2450` combinations to try and learn your preference with no tricks
