@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 import libtmux
+import io
 
 customer_names = ['jack', 'riley', 'kelley', 'scott', 'skippy', 'elvis']
 
@@ -132,7 +133,7 @@ class BuckysSmartPub:
             reports.append(cust.report(short))
         return reports
 
-    def visualize_customer_report(self, cid, report=None,):
+    def visualize_customer_report(self, cid, report=None, show=False):
         if report is None:
             report = self.compile_customer_reports()[cid]
         def percs_to_str(foo):
@@ -153,7 +154,14 @@ class BuckysSmartPub:
         ax.set_yticklabels(percs_to_str(yticks))
         ax.set_ylim(0, 1)
         ax.bar(xticks, report['running_oracle_accuracy'])
-        # plt.show()
+        if show:
+            plt.show()
+        else:
+            buf = io.BytesIO()
+            fig.savefig(buf, format='png')
+            buf.seek(0)
+            plt.close()
+            return buf.read() 
 
 # if __name__ == '__main__':
 #     pub = BuckysSmartPub()
