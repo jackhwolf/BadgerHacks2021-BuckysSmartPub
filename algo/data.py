@@ -6,7 +6,7 @@ Wrapper class around beers dataset
 '''
 class Data:
 
-    def __init__(self, N=50):
+    def __init__(self, N=10):
         self.data = np.load('Files/beer-data/beers_processed.npy')
         self.names = np.load('Files/beer-data/beers_processed_names.npy', allow_pickle=True)
         idx = np.arange(self.data.shape[0])

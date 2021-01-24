@@ -135,12 +135,12 @@ class BuckysSmartPub:
 
     def visualize_customer_report(self, cid, report=None, show=False):
         if report is None:
-            report = self.compile_customer_reports()[cid]
+            report = self.compile_customer_reports([cid])[0]
         def percs_to_str(foo):
             return [str(x) + '%' for x in (foo*100).astype(int).tolist()]
         def make_titles(report):
             suptitle = f"Customer ID: {report['customer_id']}"
-            title = "sample title"
+            title = "Customer Happiness by Round"
             return suptitle, title
         suptitle, title = make_titles(report)
         fig, ax = plt.subplots(figsize=(10,10))
@@ -153,6 +153,8 @@ class BuckysSmartPub:
         ax.set_yticks(yticks)
         ax.set_yticklabels(percs_to_str(yticks))
         ax.set_ylim(0, 1)
+        ax.set_xlabel("Round")
+        ax.set_ylabel("Happiness")
         ax.bar(xticks, report['running_oracle_accuracy'])
         if show:
             plt.show()
@@ -162,11 +164,3 @@ class BuckysSmartPub:
             buf.seek(0)
             plt.close()
             return buf.read() 
-
-# if __name__ == '__main__':
-#     pub = BuckysSmartPub()
-#     cid = pub.add_customer()
-#     pub.learn_active_customers([cid])
-#     pub.learn_active_customers([cid])
-#     pub.learn_active_customers([cid])
-#     print(pub.compile_customer_reports([cid]))

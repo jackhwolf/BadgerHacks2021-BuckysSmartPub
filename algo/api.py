@@ -67,7 +67,7 @@ class CustomerKW(BaseModel):
 class ModelKW(BaseModel):
     lr: Optional[float] = 0.0001
     wd: Optional[float] = 0.000001
-    epochs: Optional[int] = 50
+    epochs: Optional[int] = 5  # short for sample
     clip_grad: Optional[float] = 0.5
 
 class NewCustomerKW(BaseModel):

@@ -13,7 +13,7 @@ consists of two layers:
 '''
 class RankLearner:
 
-    def __init__(self, customer_ptr, lr=0.001, wd=1e-5, epochs=1, clip_grad=0.5):
+    def __init__(self, customer_ptr, lr=0.00001, wd=1e-5, epochs=500, clip_grad=1):
         self.D = customer_ptr.data_ptr.D
         self.L = customer_ptr.L_dim
         self.x_hat, self.l_hat = None, None
@@ -78,7 +78,7 @@ active learning algorithm logic to learn to select points to recommend
 '''
 class ActiveRankLearner:
 
-    def __init__(self, customer_ptr, checkpoint_threshold=0.85, model_kw={}):
+    def __init__(self, customer_ptr, checkpoint_threshold=0.95, model_kw={}):
         self.customer_ptr = customer_ptr
         self.model = RankLearner(self.customer_ptr, **model_kw)
         self.current_round = 0
@@ -86,6 +86,9 @@ class ActiveRankLearner:
         self.checkpoint_threshold = float(checkpoint_threshold)
 
     def step(self):
+        print(self.current_round)
+        print(self.count)
+        print("=================")
         if self.current_round == 0:
             self.learn_observed()
         elif not self.customer_ptr.has_unobserved:
@@ -102,7 +105,10 @@ class ActiveRankLearner:
     def learn_observed(self):
         self.model.initialize_layers()
         obs = self.customer_ptr.observed_indexes
-        idxs = self.customer_ptr.data_ptr.index
+        if self.current_round == 0:
+            idxs = self.customer_ptr.data_ptr.index
+        else:
+            idxs = self.customer_ptr.unobserved_indexes
         for pi, pj, rij in self.customer_ptr.observed_ranking_iterator(obs, idxs):
             self.count += 1
             self.model.learn_pairwise_rank(pi, pj, rij)   
@@ -119,7 +125,7 @@ class ActiveRankLearner:
     # select point(s) to observe based on scores from this round
     def make_round_selection(self, idxs, scores):
         sidxs = np.argsort(scores)
-        return idxs[[sidxs[0]]]
+        return idxs[[sidxs[-1]]]
 
     def checkpoint(self):
         true = np.array([])
