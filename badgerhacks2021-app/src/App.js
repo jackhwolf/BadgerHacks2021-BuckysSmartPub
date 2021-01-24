@@ -69,7 +69,8 @@ class Customer extends React.Component {
       <Card style={{ width: '18rem' }}>
         <Card.Body>
           <Card.Title>{this.state.cid}</Card.Title>
-          <Card.Text>{n_drinks ? "# drinks so far: " + n_drinks[n_drinks.length-1] : ""}</Card.Text>
+          <Card.Text>{n_drinks ? "Round # " + this.state.learned_rounds : ""}</Card.Text>
+          <Card.Text>{n_drinks ? "# drinks so far: " + n_drinks[n_drinks.length - 1] : ""}</Card.Text>
           <Card.Text>{happiness ? "Current Happiness: " + happiness[happiness.length-1].toFixed(2) : ""}</Card.Text>
           {rounds ? "Current top 5 recommendations:" : ""}
           {rounds ? <ol>{recs}</ol> : ""}
